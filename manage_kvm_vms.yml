@@ -1,0 +1,75 @@
+---
+- name: kvm-vm-redfish operations
+  hosts:
+    - kvm-host1.dumont-lab.lan
+#    - kvm-host2.dumont-lab.lan
+  gather_facts: no
+  vars_files:
+    - secrets_folder/ovirt-pass
+  vars:
+    - system_name: [] 
+ #     - 'ocp-host3.dumont-lab.lan'
+ #     - 'ocp-host4.dumont-lab.lan'
+    - base_uri: "{{ inventory_hostname }}:8000"
+
+  tasks:
+  - name: Get redfish system info
+    community.general.redfish_info:
+      category: Systems
+      baseuri: "{{ base_uri }}"
+      username: bdumont
+      password: "{{ ovirt_password }}"
+    register: redfish_info
+
+  - name: Get system id
+    set_fact:
+      redfish_results: "{{ redfish_info.redfish_facts.system.entries | flatten }}"
+ 
+  - name: print redfish facts
+    debug:
+      var:  redfish_results
+
+
+  - name: get ID
+    set_fact:
+      system_id: "{{ system_id + redfish_results | json_query(get_system_id) }}" 
+    vars:
+      system_id: []
+      get_system_id: "[?Name == '{{ item }}'].Id"
+    loop: "{{ system_name }}"
+
+
+  - name: Shutdown system power gracefully
+    community.general.redfish_command:
+      category: Systems
+      command: PowerGracefulShutdown
+      resource_id: "{{ item }}"
+      baseuri: "{{ base_uri }}"
+      username: bdumont
+      password: "{{ ovirt_password }}"
+    loop: "{{ system_id }}"
+    when: power_action == "off"
+
+
+  - name: Power On System
+    community.general.redfish_command:
+      category: Systems
+      command: PowerOn
+      resource_id: "{{ item }}"
+      baseuri: "{{ base_uri }}"
+      username: bdumont
+      password: "{{ ovirt_password }}"
+    loop: "{{ system_id }}"
+    when: power_action == "on"
+   
+  - name: Reboot System
+    community.general.redfish_command:
+      category: Systems
+      command: PowerReboot
+      resource_id: "{{ item }}"
+      baseuri: "{{ base_uri }}"
+      username: bdumont
+      password: "{{ ovirt_password }}"
+    loop: "{{ system_id }}"
+    when: power_action == "reboot"
+
