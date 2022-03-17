@@ -1,7 +1,7 @@
 ---
 - name: kvm-vm-redfish operations
-  hosts:
-    - kvm-host1.dumont-lab.lan
+  hosts: all
+#    - kvm-host1.dumont-lab.lan
 #    - kvm-host2.dumont-lab.lan
   gather_facts: no
   vars_files:
