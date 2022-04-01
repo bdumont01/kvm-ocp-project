@@ -11,11 +11,13 @@
  #     - 'ocp-host3.dumont-lab.lan'
  #     - 'ocp-host4.dumont-lab.lan'
     - base_uri: "{{ inventory_hostname }}:8000"
+    - image_url: []
 
   tasks:
   - name: Get redfish system info
     community.general.redfish_info:
-      category: Systems
+#      category: Update
+#      command: all
       baseuri: "{{ base_uri }}"
       username: bdumont
       password: "{{ ovirt_password }}"
@@ -73,3 +75,23 @@
     loop: "{{ system_id }}"
     when: power_action == "reboot"
 
+  - name: add virtual media and set as temporary first boot
+    block:
+      - name: add virtual media
+        community.general.redfish_command:                     
+          category: Systems        
+          command: VirtualMediaInsert     
+          resource_id: "{{ item }}"
+          baseuri: "{{ base_uri }}"
+          username: bdumont        
+          password: "{{ ovirt_password }}"
+          virtual_media:
+            image_url: "{{ image_url }}"
+            media_types:
+              - CD
+        loop: "{{ system_id }}"    
+
+
+
+
+when: power_action == "reboot"    
