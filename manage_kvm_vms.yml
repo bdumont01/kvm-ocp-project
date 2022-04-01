@@ -79,7 +79,7 @@
     community.general.redfish_command:                     
       category: Systems        
       command: SetOneTimeBoot
-      bootdevice: cdrom
+      bootdevice: 'Cd'
       resource_id: "{{ item }}"
       baseuri: "{{ base_uri }}"
       username: bdumont        
