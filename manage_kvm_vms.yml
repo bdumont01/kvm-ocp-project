@@ -79,7 +79,7 @@
     block:
       - name: add virtual media
         community.general.redfish_command:                     
-          category: Systems        
+          category: Manager        
           command: VirtualMediaInsert     
           resource_id: "{{ item }}"
           baseuri: "{{ base_uri }}"
