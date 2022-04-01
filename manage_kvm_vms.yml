@@ -75,19 +75,14 @@
     loop: "{{ system_id }}"
     when: power_action == "reboot"
 
-  - name: add virtual media and set as temporary first boot
-    block:
-      - name: add virtual media
-        community.general.redfish_command:                     
-          category: Manager        
-          command: VirtualMediaInsert     
-          resource_id: "{{ item }}"
-          baseuri: "{{ base_uri }}"
-          username: bdumont        
-          password: "{{ ovirt_password }}"
-          virtual_media:
-            image_url: '/home/images/discovery.iso'
-            media_types:
-              - CD
-        loop: "{{ system_id }}"    
-    when: power_action == "add_CD"    
+  - name: Set temporary first boot
+    community.general.redfish_command:                     
+      category: Systems        
+      command: SetOneTimeBoot
+      bootdevice: cdrom
+      resource_id: "{{ item }}"
+      baseuri: "{{ base_uri }}"
+      username: bdumont        
+      password: "{{ ovirt_password }}"
+    loop: "{{ system_id }}"    
+    when: power_action == "boot_cd"    
