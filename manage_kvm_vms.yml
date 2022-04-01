@@ -90,8 +90,4 @@
             media_types:
               - CD
         loop: "{{ system_id }}"    
-
-
-
-
-when: power_action == "reboot"    
+    when: power_action == "add_CD"    
