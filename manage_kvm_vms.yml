@@ -86,7 +86,7 @@
           username: bdumont        
           password: "{{ ovirt_password }}"
           virtual_media:
-            image_url: "{{ image_url }}"
+            image_url: '/home/images/discovery.iso'
             media_types:
               - CD
         loop: "{{ system_id }}"    
